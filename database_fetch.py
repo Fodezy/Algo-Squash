@@ -1,6 +1,8 @@
 import json
 import mysql.connector
 
+"id, email, availability, created, name, skill"
+
 ##right now im just doing id=0 user to all users [1,n]
 def entity_user():
 
@@ -13,9 +15,8 @@ def LoadServer():
         database=""
         )
         cursor = db_connection.cursor()
-        
         ### PLUG IN FUNCTIONS
-
+        extract_data_queury(cursor)
         ### END OF functions
 
         db_connection.commit()
@@ -26,3 +27,10 @@ def LoadServer():
             cursor.close()
             db_connection.close()
             print("MySQL connection is closed")
+
+def extract_data_query(cursor):
+    cursor.execute("SELECT id, availability, skill FROM submissions")
+    result = cursor.fetchall()
+    for x in result:
+        print(x)
+    return result

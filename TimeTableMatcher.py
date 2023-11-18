@@ -4,6 +4,11 @@ class AvailabilityInstance:
     def __init__(self, availability_intervals):
         self.availability = self.consolidate_availabilities(availability_intervals)
 
+    
+    def print_availability(self):
+        for start, end in self.availability:
+            print(f"Availability: from {start} to {end}")
+
     @staticmethod
     def consolidate_availabilities(availability_intervals):
         availability_intervals = sorted([(datetime.strptime(start, '%H:%M'), datetime.strptime(end, '%H:%M')) 
