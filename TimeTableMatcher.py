@@ -1,6 +1,6 @@
 from datetime import datetime
 
-class AvailabilityMatcher:
+class AvailabilityInstance:
     def __init__(self, availability_intervals):
         self.availability = self.consolidate_availabilities(availability_intervals)
 
