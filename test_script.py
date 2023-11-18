@@ -71,7 +71,13 @@ matchers = [case1_user_matcher, case2_user_matcher, case3_user_matcher]
             case9_user_matcher, case10_user_matcher, case11_user_matcher, case12_user_matcher, 
             case13_user_matcher, case14_user_matcher, case15_user_matcher, case16_user_matcher, 
             case17_user_matcher, case18_user_matcher, case19_user_matcher, case20_user_matcher]
+<<<<<<< HEAD:largest_num_overlap.py
             """
+=======
+
+
+            
+>>>>>>> c478542c5af4d6c5ca45e464189eaf53534e6721:test_script.py
 best_matches = find_best_matches(matchers)
 
 for match, overlap in best_matches.items():
@@ -89,7 +95,11 @@ for match, overlap in best_matches.items():
 
     print("\n")  # Add a newline for better readability
 
+<<<<<<< HEAD:largest_num_overlap.py
 
+=======
+# print(best_matches)
+>>>>>>> c478542c5af4d6c5ca45e464189eaf53534e6721:test_script.py
 """
 matcher = AvailabilityInstance(base_user)
 matcher_2 = AvailabilityInstance(comparative_user)
