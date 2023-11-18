@@ -69,10 +69,27 @@ matchers = [case1_user_matcher, case2_user_matcher, case3_user_matcher, case4_us
             case9_user_matcher, case10_user_matcher, case11_user_matcher, case12_user_matcher, 
             case13_user_matcher, case14_user_matcher, case15_user_matcher, case16_user_matcher, 
             case17_user_matcher, case18_user_matcher, case19_user_matcher, case20_user_matcher]
+
+
             
 best_matches = find_best_matches(matchers)
 
-print(best_matches)
+for match, overlap in best_matches.items():
+    user1_index, user2_index = match
+    user1_availability = matchers[user1_index]
+    user2_availability = matchers[user2_index]
+
+    print(f"Match between User {user1_index + 1} and User {user2_index + 1}:")
+    print(f"Overlap Duration: {overlap} hours")
+
+    # Print the common availabilities
+    common_times = user1_availability.find_common_availabilities(user2_availability)
+    for start, end in common_times:
+        print(f"Common availability: from {start} to {end}")
+
+    print("\n")  # Add a newline for better readability
+
+# print(best_matches)
 """
 matcher = AvailabilityInstance(base_user)
 matcher_2 = AvailabilityInstance(comparative_user)
