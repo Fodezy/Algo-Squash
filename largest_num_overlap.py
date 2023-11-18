@@ -21,6 +21,7 @@ def calculate_duration(overlap):
 # Updated Function to find the best 1-1 match based on common availability
 def find_best_matches(matchers):
     overlaps = {}
+
     for (i, matcher1), (j, matcher2) in combinations(enumerate(matchers), 2):
         common_availabilities = matcher1.find_common_availabilities(matcher2)
         total_overlap = sum([calculate_duration(overlap) for overlap in common_availabilities])
@@ -64,15 +65,31 @@ case19_user_matcher = AvailabilityInstance([('13:00', '15:00'), ('20:00', '23:59
 case20_user_matcher = AvailabilityInstance([('08:00', '09:30'), ('21:30', '23:59')])
 
 # Now, you can add these instances to a list to be used in your matching algorithm
-matchers = [case1_user_matcher, case2_user_matcher, case3_user_matcher, case4_user_matcher, 
+matchers = [case1_user_matcher, case2_user_matcher, case3_user_matcher]
+""", case4_user_matcher, 
             case5_user_matcher, case6_user_matcher, case7_user_matcher, case8_user_matcher, 
             case9_user_matcher, case10_user_matcher, case11_user_matcher, case12_user_matcher, 
             case13_user_matcher, case14_user_matcher, case15_user_matcher, case16_user_matcher, 
             case17_user_matcher, case18_user_matcher, case19_user_matcher, case20_user_matcher]
-            
+            """
 best_matches = find_best_matches(matchers)
 
-print(best_matches)
+for match, overlap in best_matches.items():
+    user1_index, user2_index = match
+    user1_availability = matchers[user1_index]
+    user2_availability = matchers[user2_index]
+
+    print(f"Match between User {user1_index + 1} and User {user2_index + 1}:")
+    print(f"Overlap Duration: {overlap} hours")
+
+    # Print the common availabilities
+    common_times = user1_availability.find_common_availabilities(user2_availability)
+    for start, end in common_times:
+        print(f"Common availability: from {start} to {end}")
+
+    print("\n")  # Add a newline for better readability
+
+
 """
 matcher = AvailabilityInstance(base_user)
 matcher_2 = AvailabilityInstance(comparative_user)
