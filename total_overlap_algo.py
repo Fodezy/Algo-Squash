@@ -71,6 +71,8 @@ def generate_users(num_of_users, busy_schedule_ratio):
     for user_id in range(1, num_of_users + 1):
         availability = {}
         days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+        names = ['John', 'Jane', 'Bob', 'Alice', 'Joe', 'Jill', 'Bill', 'Sally', 'Jack', 'Jenny']
+        emails = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'aol.com', 'icloud.com']
         
         # Use generate_times to create consistent time slots
         times = generate_times('8:00 AM', '8:00 PM')  
@@ -81,16 +83,22 @@ def generate_users(num_of_users, busy_schedule_ratio):
             for time in times:
                 availability[day][time] = random.choices([True, False], weights=[1, busy_schedule_ratio])[0]
         
-        # Add the user with their availability and skill level to the dictionary
+
+
+        # Add the user with their availability, name, and email to the dictionary
+        temp_name = random.choice(names)
+        grand_dict[user_id] = {'name': temp_name}
+        grand_dict[user_id] = {'email': temp_name + '@' + random.choice(emails)}
         grand_dict[user_id] = {'availability': availability}
     
     return grand_dict
 
 def main():
     # Generate test users and find the best matches
-    test_users = generate_users(19, 11)
+    test_users = generate_users(2, 1)
     best_matches, common_times_dict = find_best_matches(test_users)
 
+    """
     # Print the results, including specific overlapping times
     for match, overlap in best_matches.items():
         print(f"Match between User {match[0]} and User {match[1]}: Overlap Duration: {overlap} hours")
@@ -102,5 +110,9 @@ def main():
     for notify in users_without_matches:
         print(f"Notify User {notify} that they do not have a match") 
     return
+    """
+
+    print(best_matches)
+    print(common_times_dict)
 
 main()

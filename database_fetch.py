@@ -34,7 +34,7 @@ def LoadServer():
 # Function to extract data from the database
 def extract_data_query(cursor):
     # Execute the SQL query to select data
-    cursor.execute("SELECT id, availability, email FROM submissions")
+    cursor.execute("SELECT id, availability, email, name FROM submissions")
 
     # Fetch all the rows returned by the database
     result = cursor.fetchall()
@@ -48,7 +48,8 @@ def extract_data_query(cursor):
         # Store each user's data with their 'id' as the key
         data[id] = {
             'availability': availability_dict,
-            'email': email
+            'email': email,
+            'name': name,
         }
 
     # Return the processed data
