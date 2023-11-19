@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin python3.9
 import json
 import mysql.connector
 from datetime import datetime, timedelta
