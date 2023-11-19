@@ -43,4 +43,4 @@ def extract_data_query(cursor):
 
 
 data = LoadServer()
-print(data[16].get('availability'))
+
