@@ -71,9 +71,7 @@ def generate_users(num_of_users, busy_schedule_ratio):
         
         # Use generate_times to create consistent time slots
         times = generate_times('8:00 AM', '8:00 PM')  
-        
-        skill = ['Beginner', 'Intermediate', 'Advanced']
-        
+    
         # Randomly assign availability for each time slot
         for day in days:
             availability[day] = {}
@@ -81,7 +79,7 @@ def generate_users(num_of_users, busy_schedule_ratio):
                 availability[day][time] = random.choices([True, False], weights=[1, busy_schedule_ratio])[0]
         
         # Add the user with their availability and skill level to the dictionary
-        grand_dict[user_id] = {'availability': availability, 'skill': random.choice(skill)}
+        grand_dict[user_id] = {'availability': availability}
     
     return grand_dict
 
