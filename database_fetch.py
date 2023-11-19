@@ -51,7 +51,6 @@ def extract_data_query(cursor):
             'email': email,
             'name': name,
         }
-
     # Return the processed data
     return data   
 

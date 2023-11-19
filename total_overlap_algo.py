@@ -125,10 +125,10 @@ def user_details_and_common_times(users, matched_tuple_ids, matched_schedule):
 
 def main():
     # Generate test users and find the best matches
-    test_users = generate_users(5, 1)
+    test_users = generate_users(10, 1)
     best_matches, common_times_dict = find_best_matches(test_users)
     for match, overlap in best_matches.items():
-        print(user_details_and_common_times(test_users, match,ccommon_times_dict[match]))
+        print(user_details_and_common_times(test_users, match,common_times_dict[match]))
     return
     """
     # Print the results, including specific overlapping times
