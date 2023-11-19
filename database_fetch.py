@@ -31,17 +31,16 @@ def extract_data_query(cursor):
     cursor.execute("SELECT id, availability, skill FROM submissions")
 
     result = cursor.fetchall()
-    data = []
+    data = {}  # Initialize as an empty dictionary
     for row in result:
         id, availability, skill = row
         availability_dict = json.loads(availability)
-        data.append({
-            'id': id,
+        data[id] = {  # Use id as the key
             'availability': availability_dict,
             'skill': skill
-        })
-    return data       
+        }
+    return data   
 
 
 data = LoadServer()
-print(data)
+print(data[16].get('availability'))
