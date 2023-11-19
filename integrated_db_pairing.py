@@ -3,8 +3,8 @@ import mysql.connector
 from datetime import datetime, timedelta
 from itertools import combinations
 import random
-# from text import create_json_data, send_email
 from JAMES_FIX import send_email
+# from text import create_json_data, send_email
 
 # Assuming 'main' and 'generate_times' are correctly defined in 'total_overlap_algo'
 
