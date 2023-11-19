@@ -3,7 +3,8 @@ import mysql.connector
 from datetime import datetime, timedelta
 from itertools import combinations
 import random
-from text import create_json_data, send_email
+# from text import create_json_data, send_email
+from JAMES_FIX import send_email
 
 # Assuming 'main' and 'generate_times' are correctly defined in 'total_overlap_algo'
 
@@ -155,12 +156,13 @@ def user_details_and_common_times(users, matched_tuple_ids, matched_schedule):
     common_times = matched_schedule
 
     result = {
-        id1: user1_details,
-        id2: user2_details,
+        'id1': user1_details,
+        'id2': user2_details,
         'timeslot': common_times
     }
 
-    return json.dumps(result, indent=4)
+    # return json.dumps(result, indent=4)
+    return result
 
 # Main function to execute the matching process
 def main():
@@ -171,21 +173,7 @@ def main():
         for match, overlap in best_matches.items():
             # print(match, overlap)
             temp_data_reserve=(user_details_and_common_times(data, match, common_times_dict[match]))
-
             send_email(temp_data_reserve)
-            
-# users_emailed = set()  # Track users who have been emailed
+    return
 
-#         for match, overlap in best_matches.items():
-#             user_ids = (match[0], match[1])
-
-#             for user_id in user_ids:
-#                 if user_id not in users_emailed:
-#                     # Prepare and send email only if the user hasn't been emailed yet
-#                     temp_data_reserve = user_details_and_common_times(data, match, common_times_dict[match])
-#                     send_email(temp_data_reserve)
-#                     users_emailed.add(user_id)
-
-
-# Execute the main function
 main()
