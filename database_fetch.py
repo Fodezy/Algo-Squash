@@ -28,16 +28,16 @@ def LoadServer():
             return extracted_raw_data
 
 def extract_data_query(cursor):
-    cursor.execute("SELECT id, availability, skill FROM submissions")
+    cursor.execute("SELECT id, availability, email FROM submissions")
 
     result = cursor.fetchall()
     data = {}  # Initialize as an empty dictionary
     for row in result:
-        id, availability, skill = row
+        id, availability, email = row
         availability_dict = json.loads(availability)
         data[id] = {  # Use id as the key
             'availability': availability_dict,
-            'skill': skill
+            'email': email
         }
     return data   
 
