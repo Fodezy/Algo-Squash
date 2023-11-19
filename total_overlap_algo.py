@@ -5,62 +5,50 @@ import json
 
 # Function to generate time slots within a specified range
 def generate_times(start_time_str, end_time_str, fmt='%I:%M %p'):
+    """Generate time slots between two times."""
     times = []
     start_time = datetime.strptime(start_time_str, fmt)
     end_time = datetime.strptime(end_time_str, fmt)
-    
-    # Loop through the time range and add each hour to the list
-    current_time = start_time
-    while current_time <= end_time:
-        times.append(current_time.strftime(fmt))
-        current_time += timedelta(hours=1)
+
+    # Add each hour to the list
+    while start_time <= end_time:
+        times.append(start_time.strftime(fmt))
+        start_time += timedelta(hours=1)
 
     return times
 
 # Function to find common available time slots between two users
-def find_common_availabilities(user1, user2, max_slots=10):
+def find_common_availabilities(user1, user2, max_slots=14, max_daily_slots=2):
+    """Find common available time slots, with weekly and daily limits."""
     common_availabilities = {}
-    total_slots = 0
-
-    # List to keep track of all possible common times
-    all_common_times = []
+    weekly_slots = 0
 
     # Check each day for overlapping times
     for day in user1['availability']:
         if day in user2['availability']:
             common_times = []
-            # Compare each time slot for both users
+            daily_slots = 0
             for time in generate_times('8:00 AM', '8:00 PM'):
-                if user1['availability'][day].get(time, False) and user2['availability'][day].get(time, False):
-                    common_times.append(time)
-                    all_common_times.append((day, time))
+                if (user1['availability'][day].get(time, False) and
+                        user2['availability'][day].get(time, False)):
+                    if daily_slots < max_daily_slots and weekly_slots < max_slots:
+                        common_times.append(time)
+                        daily_slots += 1
+                        weekly_slots += 1
 
-    # Randomly shuffle the list of all common times
-    random.shuffle(all_common_times)
-
-    # Select up to max_slots times, trying to distribute across the week
-    for day, time in all_common_times:
-        if total_slots < max_slots:
-            if day not in common_availabilities:
-                common_availabilities[day] = []
-            common_availabilities[day].append(time)
-            total_slots += 1
-        else:
-            break
-
-    # Sort the days and times
-    for day in common_availabilities:
-        common_availabilities[day].sort(key=lambda x: datetime.strptime(x, '%I:%M %p'))
+            if common_times:
+                common_availabilities[day] = common_times
 
     return common_availabilities
 
-
 # Calculate the total duration of overlapping time slots
 def calculate_duration(common_availabilities):
+    """Calculate total duration of overlapping time slots."""
     return sum(len(times) for times in common_availabilities.values())
 
 # Find the best matches based on the maximum overlap in availability
 def find_best_matches(users):
+    """Find best matches for all users."""
     overlaps = {}
     common_times_dict = {}  # Stores common available times for each match
 
@@ -69,8 +57,7 @@ def find_best_matches(users):
         common_availabilities = find_common_availabilities(user1, user2)
         total_overlap = calculate_duration(common_availabilities)
         
-        # Only consider pairs with a non-zero overlap
-        if total_overlap > 0:
+        if total_overlap > 0:  # Only consider pairs with a non-zero overlap
             overlaps[(id1, id2)] = total_overlap
             common_times_dict[(id1, id2)] = common_availabilities
 
@@ -84,65 +71,47 @@ def find_best_matches(users):
         matches[best_match] = overlaps[best_match]
 
         # Remove already matched users from further consideration
-        overlaps = {pair: time for pair, time in overlaps.items() if pair[0] not in matched_indices and pair[1] not in matched_indices}
+        overlaps = {pair: time for pair, time in overlaps.items()
+                    if pair[0] not in matched_indices and pair[1] not in matched_indices}
 
-    return matches, common_times_dict  # Return both the matches and the common available times
+    return matches, common_times_dict
 
 # Generate random users with random availability
 def generate_users(num_of_users, busy_schedule_ratio):
-    grand_dict = {}
-    # Create a user entry for each ID in the specified range
+    """Generate user details and random availability."""
+    user_data = {}
+    days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+    names = ['John', 'Jane', 'Bob', 'Alice', 'Joe', 'Jill', 'Bill', 'Sally', 'Jack', 'Jenny']
+    email_domain = 'gmail.com'
+
+    # Create user entries
     for user_id in range(1, num_of_users + 1):
-        availability = {}
-        days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
-        names = ['John', 'Jane', 'Bob', 'Alice', 'Joe', 'Jill', 'Bill', 'Sally', 'Jack', 'Jenny']
-        email = 'gmail.com'
-        
-        # Use generate_times to create consistent time slots
-        times = generate_times('8:00 AM', '8:00 PM')  
-    
-        # Randomly assign availability for each time slot
-        for day in days:
-            availability[day] = {}
-            for time in times:
-                availability[day][time] = random.choices([True, False], weights=[1, busy_schedule_ratio])[0]
-        
+        name = random.choice(names)
+        email = f'{name.lower()}@{email_domain}'
+        availability = {day: {time: random.choices([True, False], weights=[1, busy_schedule_ratio])[0]
+                              for time in generate_times('8:00 AM', '8:00 PM')} for day in days}
 
-
-        # Add the user with their availability, name, and email to the dictionary
-        temp_name = random.choice(names)
-        grand_dict[user_id] = {
-            'name': temp_name,
-            'email': temp_name + '@' + email,
+        user_data[user_id] = {
+            'name': name,
+            'email': email,
             'availability': availability
-            }
-    
-    return grand_dict
+        }
 
+    return user_data
 
 def user_details_and_common_times(users, matched_tuple_ids, matched_schedule):
+    """Construct JSON with user details and common times."""
     id1, id2 = matched_tuple_ids
-    # Retrieve user details
-    user1_details = users.get(id1, {'name', 'email'})
-    user2_details = users.get(id2, {'name', 'email'})
-    
-    # Retrieve common availability times if they have been matched
+    user1_details = users.get(id1, {'name': '', 'email': ''})
+    user2_details = users.get(id2, {'name': '', 'email': ''})
     common_times = matched_schedule
-    
-    # Construct the desired JSON structure
+
     result = {
-        id1: {
-            'name': user1_details.get('name'),
-            'email': user1_details.get('email')
-        },
-        id2: {
-            'name': user2_details.get('name'),
-            'email': user2_details.get('email')
-        },
+        id1: user1_details,
+        id2: user2_details,
         'timeslot': common_times
     }
-    
-    # Return the JSON structure as a string
+
     return json.dumps(result, indent=4)
 
 
@@ -166,9 +135,5 @@ def main():
         print(f"Notify User {notify} that they do not have a match") 
     return
     
-
-
-    
-  
-
+# Print the results, including specific overlapping times
 main()
