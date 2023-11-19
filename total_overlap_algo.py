@@ -18,8 +18,13 @@ def generate_times(start_time_str, end_time_str, fmt='%I:%M %p'):
     return times
 
 # Function to find common available time slots between two users
-def find_common_availabilities(user1, user2):
+def find_common_availabilities(user1, user2, max_slots=10):
     common_availabilities = {}
+    total_slots = 0
+
+    # List to keep track of all possible common times
+    all_common_times = []
+
     # Check each day for overlapping times
     for day in user1['availability']:
         if day in user2['availability']:
@@ -28,9 +33,27 @@ def find_common_availabilities(user1, user2):
             for time in generate_times('8:00 AM', '8:00 PM'):
                 if user1['availability'][day].get(time, False) and user2['availability'][day].get(time, False):
                     common_times.append(time)
-            if common_times:
-                common_availabilities[day] = common_times
+                    all_common_times.append((day, time))
+
+    # Randomly shuffle the list of all common times
+    random.shuffle(all_common_times)
+
+    # Select up to max_slots times, trying to distribute across the week
+    for day, time in all_common_times:
+        if total_slots < max_slots:
+            if day not in common_availabilities:
+                common_availabilities[day] = []
+            common_availabilities[day].append(time)
+            total_slots += 1
+        else:
+            break
+
+    # Sort the days and times
+    for day in common_availabilities:
+        common_availabilities[day].sort(key=lambda x: datetime.strptime(x, '%I:%M %p'))
+
     return common_availabilities
+
 
 # Calculate the total duration of overlapping time slots
 def calculate_duration(common_availabilities):
@@ -130,7 +153,7 @@ def main():
     for match, overlap in best_matches.items():
         print(user_details_and_common_times(test_users, match,common_times_dict[match]))
     return
-    """
+    
     # Print the results, including specific overlapping times
     for match, overlap in best_matches.items():
         print(f"Match between User {match[0]} and User {match[1]}: Overlap Duration: {overlap} hours")
@@ -142,7 +165,7 @@ def main():
     for notify in users_without_matches:
         print(f"Notify User {notify} that they do not have a match") 
     return
-    """
+    
 
 
     
