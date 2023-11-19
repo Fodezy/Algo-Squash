@@ -6,28 +6,52 @@ import json
 def create_json_data():
     data = [
         {
-            "2": {
-                "name": "Eric",
-                "email": "ericfode2@gmail.com"
+            "16": {
+                "email": "johnninja.com",
+                "name": "jon"
             },
-            "9": {
-                "name": "Sally",
-                "email": "Sally@gmail.com"
+            "38": {
+                "email": "ericfode2@gmail.com",
+                "name": "eric"
             },
             "timeslot": {
-                "Monday": ["09:00 AM", "10:00 AM"],
-                "Tuesday": ["09:00 AM", "03:00 PM"],
-                "Wednesday": ["09:00 AM", "10:00 AM"],
-                "Thursday": ["01:00 PM", "07:00 PM"],
-                "Friday": ["10:00 AM", "02:00 PM"],
-                "Saturday": ["09:00 AM", "12:00 PM"],
-                "Sunday": ["10:00 AM", "05:00 PM"]
+                "Friday": [
+                    "11:00 AM"
+                ],
+                "Monday": [
+                    "11:00 AM"
+                ],
+                "Sunday": [
+                    "11:00 AM"
+                ],
+                "Tuesday": [
+                    "11:00 AM"
+                ],
+                "Saturday": [
+                    "11:00 AM"
+                ],
+                "Thursday": [
+                    "11:00 AM"
+                ],
+                "Wednesday": [
+                    "11:00 AM"
+                ]
             }
-        },
-        # ... (similar structures for other datasets)
+        }
     ]
 
+    # Sort the timeslots within each day
+    for entry in data:
+        if "timeslot" in entry:
+            for day, timeslot in entry["timeslot"].items():
+                entry["timeslot"][day] = sorted(timeslot)
+
+    # Order the days in the email
+    ordered_days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+    data[0]["timeslot"] = {day: entry["timeslot"][day] for day in ordered_days if day in entry["timeslot"]}
+
     json_string = json.dumps(data, indent=4)
+    print(json_string)
     with open("output.json", "w") as json_file:
         json_file.write(json_string)
 
