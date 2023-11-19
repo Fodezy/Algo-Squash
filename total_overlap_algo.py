@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from itertools import combinations
 import random
+import json
 
 # Function to generate time slots within a specified range
 def generate_times(start_time_str, end_time_str, fmt='%I:%M %p'):
@@ -72,7 +73,7 @@ def generate_users(num_of_users, busy_schedule_ratio):
         availability = {}
         days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
         names = ['John', 'Jane', 'Bob', 'Alice', 'Joe', 'Jill', 'Bill', 'Sally', 'Jack', 'Jenny']
-        emails = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'aol.com', 'icloud.com']
+        email = 'gmail.com'
         
         # Use generate_times to create consistent time slots
         times = generate_times('8:00 AM', '8:00 PM')  
@@ -87,17 +88,48 @@ def generate_users(num_of_users, busy_schedule_ratio):
 
         # Add the user with their availability, name, and email to the dictionary
         temp_name = random.choice(names)
-        grand_dict[user_id] = {'name': temp_name}
-        grand_dict[user_id] = {'email': temp_name + '@' + random.choice(emails)}
-        grand_dict[user_id] = {'availability': availability}
+        grand_dict[user_id] = {
+            'name': temp_name,
+            'email': temp_name + '@' + email,
+            'availability': availability
+            }
     
     return grand_dict
 
+
+def user_details_and_common_times(users, matched_tuple_ids, matched_schedule):
+    id1, id2 = matched_tuple_ids
+    # Retrieve user details
+    user1_details = users.get(id1, {'name', 'email'})
+    user2_details = users.get(id2, {'name', 'email'})
+    
+    # Retrieve common availability times if they have been matched
+    common_times = matched_schedule
+    
+    # Construct the desired JSON structure
+    result = {
+        id1: {
+            'name': user1_details.get('name'),
+            'email': user1_details.get('email')
+        },
+        id2: {
+            'name': user2_details.get('name'),
+            'email': user2_details.get('email')
+        },
+        'timeslot': common_times
+    }
+    
+    # Return the JSON structure as a string
+    return json.dumps(result, indent=4)
+
+
 def main():
     # Generate test users and find the best matches
-    test_users = generate_users(2, 1)
+    test_users = generate_users(5, 1)
     best_matches, common_times_dict = find_best_matches(test_users)
-
+    for match, overlap in best_matches.items():
+        print(user_details_and_common_times(test_users, match,ccommon_times_dict[match]))
+    return
     """
     # Print the results, including specific overlapping times
     for match, overlap in best_matches.items():
@@ -112,7 +144,8 @@ def main():
     return
     """
 
-    print(best_matches)
-    print(common_times_dict)
+
+    
+  
 
 main()
