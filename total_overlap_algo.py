@@ -44,8 +44,11 @@ def find_best_matches(users):
     for (id1, user1), (id2, user2) in combinations(users.items(), 2):
         common_availabilities = find_common_availabilities(user1, user2)
         total_overlap = calculate_duration(common_availabilities)
-        overlaps[(id1, id2)] = total_overlap
-        common_times_dict[(id1, id2)] = common_availabilities
+        
+        # Only consider pairs with a non-zero overlap
+        if total_overlap > 0:
+            overlaps[(id1, id2)] = total_overlap
+            common_times_dict[(id1, id2)] = common_availabilities
 
     matches = {}
     matched_indices = set()
@@ -85,7 +88,7 @@ def generate_users(num_of_users, busy_schedule_ratio):
 
 def main():
     # Generate test users and find the best matches
-    test_users = generate_users(120, 3)
+    test_users = generate_users(19, 11)
     best_matches, common_times_dict = find_best_matches(test_users)
 
     # Print the results, including specific overlapping times
@@ -94,6 +97,10 @@ def main():
         for day, times in common_times_dict[match].items():
             print(f"  - Common times on {day}: {', '.join(times)}")
 
+    users_without_matches = set(test_users.keys()) - set(user_id for match in best_matches for user_id in match)
+
+    for notify in users_without_matches:
+        print(f"Notify User {notify} that they do not have a match") 
     return
 
 main()
