@@ -32,14 +32,15 @@ def find_common_availabilities(user1, user2):
 def calculate_duration(common_availabilities):
     return sum(len(times) for times in common_availabilities.values())
 
-# Find the best matches
 def find_best_matches(users):
     overlaps = {}
+    common_times_dict = {}  # To store common available times for each match
 
     for (id1, user1), (id2, user2) in combinations(users.items(), 2):
         common_availabilities = find_common_availabilities(user1, user2)
         total_overlap = calculate_duration(common_availabilities)
         overlaps[(id1, id2)] = total_overlap
+        common_times_dict[(id1, id2)] = common_availabilities
 
     matches = {}
     matched_indices = set()
@@ -49,9 +50,10 @@ def find_best_matches(users):
         matched_indices.update(best_match)
         matches[best_match] = overlaps[best_match]
 
+        # Remove matched users and their related pairs
         overlaps = {pair: time for pair, time in overlaps.items() if pair[0] not in matched_indices and pair[1] not in matched_indices}
 
-    return matches
+    return matches, common_times_dict  # Return both matches and common available times
 
 def generate_users(num_of_users, busy_schedule_ratio):
     grand_dict = {}
@@ -72,8 +74,14 @@ def generate_users(num_of_users, busy_schedule_ratio):
 
 def main():
     test_users = generate_users(120, 3)
-    best_matches = find_best_matches(test_users)
+    best_matches, common_times_dict = find_best_matches(test_users)  # Get common times as well
 
     # Print Results
     for match, overlap in best_matches.items():
         print(f"Match between User {match[0]} and User {match[1]}: Overlap Duration: {overlap} hours")
+        for day, times in common_times_dict[match].items():
+            print(f"  - Common times on {day}: {', '.join(times)}")
+
+    return
+
+main()

@@ -42,5 +42,5 @@ def extract_data_query(cursor):
     return data   
 
 
-data = LoadServer()
+#data = LoadServer()
 
